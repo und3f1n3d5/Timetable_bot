@@ -1,5 +1,7 @@
 import time
 
+import telebot
+
 import requests
 import datetime
 
@@ -161,9 +163,9 @@ def main():
     new_offset = None
 
     while True:
-        #time_bot.get_updates(new_offset)
+        time_bot.get_updates(new_offset)
 
-        last_update = time_bot.get_last_update(new_offset)
+        last_update = time_bot.get_last_update()
         if last_update:
             last_update_id = last_update['update_id']
             last_chat_text = last_update['message']['text']
@@ -194,19 +196,6 @@ def main():
             if last_chat_text.find("/stop_removing") != -1:
                 time_bot.end_removing(last_chat_id)
 
-
-                
-            ###     todo  
-            # сделать команды апдейта и удаления в раздельных сообщениях 
-            # например, добавить в юзера поле ожидания 
-            
-            ###     todo 
-            # сделать команды окончания апдейта/удаления -> меняют статус ожидания юзера
-            # и резет -> обнуляет расписание юзера
-
-            ###     todo
-            # обновление статусов событий каждое вс
-            # вывести расписание юзера
 
             new_offset = last_update_id + 1
 
