@@ -62,7 +62,8 @@ class BotHandler:
             self.users[str(user_id)].add_event(update)
             self.send_message(user_id, "Добавлено")
         except Exception as e:
-            print(e, "in add events, message:", update)
+            errors = open("error.txt", "a")
+            errors.write(str(e) + "in add events, message:" + update)
             self.send_message(user_id, "Некорректный формат")
 
     def remove_events(self, user_id, remove):
@@ -70,7 +71,8 @@ class BotHandler:
             self.users[str(user_id)].remove_event(remove)
             self.send_message(user_id, "Удалено")
         except Exception as e:
-            print(e, "in remove events, message:", remove)
+            errors = open("error.txt", "a")
+            errors.write(str(e) + "in remove events, message:" + remove)
             self.send_message(user_id, "Некорректный формат или нет такого события")
 
     def start_update(self, user_id):
@@ -244,7 +246,8 @@ def main():
             if now.day == "Mon" and now.hour == 0:
                 time_bot.refresh()
         except Exception as e:
-            print(e, "in main")
+            errors = open("error.txt", "a")
+            errors.write(str(e) + "in main")
 
 
 if __name__ == '__main__':
