@@ -1,6 +1,5 @@
-import time
-
 import telebot
+import time
 
 import requests
 import datetime
@@ -37,10 +36,7 @@ class BotHandler:
         return result_json
 
     def send_message(self, chat_id, text):
-        params = {'chat_id': chat_id, 'text': text}
-        method = 'sendMessage'
-        resp = requests.post(self.api_url + method, params)
-        return resp
+        bot.send_message(chat_id, text)
 
     def get_last_update(self, offset=None):
         get_result = self.get_updates(offset)
@@ -63,13 +59,15 @@ class BotHandler:
 
     def add_events(self, user_id, update):
         try:
-            self.users[str(user_id)].add_event(update[update.find(" ") + 1:])
+            self.users[str(user_id)].add_event(update)
+            self.send_message(user_id, "Добавлено")
         except:
             self.send_message(user_id, "Некорректный формат")
 
     def remove_events(self, user_id, remove):
         try:
-            self.users[str(user_id)].remove_event(remove[remove.find(" ") + 1:])
+            self.users[str(user_id)].remove_event(remove)
+            self.send_message(user_id, "Удалено")
         except:
             self.send_message(user_id, "Некорректный формат или нет такого события")
 
@@ -87,9 +85,11 @@ class BotHandler:
 
     def end_update(self, user_id):
         self.users[user_id].is_updating = False
+        self.send_message(user_id, "Добавление успешно завершено")
 
     def end_removing(self, user_id):
         self.users[user_id].is_removing = False
+        self.send_message(user_id, "Удаление успешно завершено")
 
     def reset(self, user_id):
         self.users[user_id].events.clear()
@@ -112,6 +112,11 @@ class BotHandler:
         for event in self.users[user_id].events:
             ans += event.day + " " + event.hour + ":" + event.minute + " " + event.message + "\n";
         self.send_message(user_id, ans)
+
+    def start_message(self, chat_id):
+        self.update_users(chat_id)
+        self.send_message(chat_id, 'Приветствую, друг! Я бот, который может напоминать тебе о событиях. Нажми '
+                                   '/help, чтобы увидеть мои команды')
 
 
 class User:
@@ -157,21 +162,22 @@ class Event:
 
 
 time_bot = BotHandler(token)
-
+bot = telebot.TeleBot('1411772657:AAFkziVjMcehzkWDRWJyrnt7au7EBqDL9nQ')
 
 def main():
     new_offset = None
 
     while True:
-        time_bot.get_updates(new_offset)
-
-        last_update = time_bot.get_last_update()
-        if last_update:
-            last_update_id = last_update['update_id']
-            last_chat_text = last_update['message']['text']
-            last_chat_id = last_update['message']['chat']['id']
-            last_chat_name = last_update['message']['chat']['first_name']
+        upds = bot.get_updates(offset=new_offset)
+        if upds:
+            last_update = upds[-1]
+            last_update_id = last_update.update_id
+            last_chat_text = last_update.message.text
+            last_chat_id = str(last_update.message.chat.id)
             time_bot.update_users(last_chat_id)
+
+            if last_chat_text.find("/start") != -1:
+                time_bot.start_message(last_chat_id)
 
             if last_chat_text.find("/help") != -1:
                 time_bot.help(last_chat_id)
@@ -184,18 +190,17 @@ def main():
 
             if last_chat_text.find("/add_events") != -1:
                 time_bot.start_update(last_chat_id)
-            if time_bot.users[last_chat_id].is_updating:
-                time_bot.add_events(last_chat_id, last_chat_text)
-            if last_chat_text.find("/stop_adding") != -1:
+            elif last_chat_text.find("/stop_adding") != -1:
                 time_bot.end_update(last_chat_id)
+            elif time_bot.users[last_chat_id].is_updating:
+                time_bot.add_events(last_chat_id, last_chat_text)
 
             if last_chat_text.find("/remove_events") != -1:
                 time_bot.start_removing(last_chat_id)
-            if time_bot.users[last_chat_id].is_removing:
-                time_bot.remove_events(last_chat_id, last_chat_text)
-            if last_chat_text.find("/stop_removing") != -1:
+            elif last_chat_text.find("/stop_removing") != -1:
                 time_bot.end_removing(last_chat_id)
-
+            elif time_bot.users[last_chat_id].is_removing:
+                time_bot.remove_events(last_chat_id, last_chat_text)
 
             new_offset = last_update_id + 1
 
