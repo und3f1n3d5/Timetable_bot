@@ -1,7 +1,5 @@
 import telebot
-import time
-
-import requests
+#import time
 import datetime
 
 token = "1411772657:AAFkziVjMcehzkWDRWJyrnt7au7EBqDL9nQ"
@@ -28,24 +26,8 @@ class BotHandler:
         self.token = token
         self.api_url = "https://api.telegram.org/bot1411772657:AAFkziVjMcehzkWDRWJyrnt7au7EBqDL9nQ/"
 
-    def get_updates(self, offset=None, timeout=1):
-        method = 'getUpdates'
-        params = {'timeout': timeout, 'offset': offset}
-        resp = requests.get(self.api_url + method, params)
-        result_json = resp.json()['result']
-        return result_json
-
     def send_message(self, chat_id, text):
         bot.send_message(chat_id, text)
-
-    def get_last_update(self, offset=None):
-        get_result = self.get_updates(offset)
-        if len(get_result) > 0:
-            last_update = get_result[-1]
-        else:
-            last_update = None
-
-        return last_update
 
     def update_users(self, i):
         if i not in self.users:
@@ -64,6 +46,7 @@ class BotHandler:
         except Exception as e:
             errors = open("error.txt", "a")
             errors.write(str(e) + "in add events, message:" + update)
+            errors.close()
             self.send_message(user_id, "Некорректный формат")
 
     def remove_events(self, user_id, remove):
@@ -73,6 +56,7 @@ class BotHandler:
         except Exception as e:
             errors = open("error.txt", "a")
             errors.write(str(e) + "in remove events, message:" + remove)
+            errors.close()
             self.send_message(user_id, "Некорректный формат или нет такого события")
 
     def start_update(self, user_id):
@@ -132,6 +116,7 @@ class BotHandler:
 
 class User:
     def __init__(self, string):
+        self.days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
         self.id = string
         self.events = set()
         self.is_updating = False
@@ -150,10 +135,10 @@ class User:
         self.events.remove(to_rm)
 
     def get_next_event(self):
-        var = time.strftime("%a#%H^%M:%S", time.localtime())
-        day = var[:var.find("#")]
-        hour = int(var[var.find("#") + 1:var.find("^")])
-        minute = int(var[var.find("^") + 1:var.find(":")])
+        now = datetime.datetime.now()
+        day = self.days[now.weekday()]
+        hour = now.hour
+        minute = now.minute
         for event in self.events:
             if event.day == day and event.hour == hour and event.minute == minute and event.reminded == 0:
                 event.reminded = 1
@@ -241,13 +226,14 @@ def main():
 
             time_bot.remind()
             now = datetime.datetime.now()
-            if now.minute == 23:
+            if now.minute == 0:
                 time_bot.sync()
             if now.day == "Mon" and now.hour == 0:
                 time_bot.refresh()
         except Exception as e:
             errors = open("error.txt", "a")
             errors.write(str(e) + "in main")
+            errors.close()
 
 
 if __name__ == '__main__':
