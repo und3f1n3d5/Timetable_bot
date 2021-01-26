@@ -1,6 +1,5 @@
 from Events import events, event
-
-Days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
+from constants import Days
 
 
 class user:
@@ -13,6 +12,7 @@ class user:
         self.is_subscribed = False
         self.added_day = ""
         self.added_event = event(-1, -1, "")
+        self.sure_reset = False
 
     def add(self, line):
         self.events.add(line)
@@ -136,6 +136,8 @@ class user:
         return
 
     def subscribe(self, what, timetable):
+        if not self.is_subscribed and not what:
+            return
         self.is_subscribed = what
         for day in Days:
             for ev in timetable.Events[day]:
@@ -143,9 +145,12 @@ class user:
                     self.events.add_event(ev, day)
                 else:
                     mm = str(ev.minute)
+                    hh = str(ev.hour)
                     if ev.minute < 10:
                         mm = "0" + mm
-                    self.events.remove_event(day + " " + str(ev.hour) + ":" + mm + " " + ev.text)
+                    if ev.hour < 10:
+                        hh = "0" + hh
+                    self.events.remove_event(day + " " + hh + ":" + mm + " " + ev.text)
 
     def reset(self):
         self.events = events()
