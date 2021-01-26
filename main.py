@@ -1,16 +1,11 @@
-import telebot
-# import time
 import datetime
+import constants
 from BotHandler import BotHandler
-
-Days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
-
-token = "1411772657:AAFkziVjMcehzkWDRWJyrnt7au7EBqDL9nQ"
 
 
 def main():
     new_offset = None
-    bot = BotHandler(token)
+    bot = BotHandler(constants.token)
     backuped = False
     back_up_minute = 30
 
@@ -31,7 +26,7 @@ def main():
             if now.minute >= back_up_minute and not backuped:
                 bot.backup_all()
                 backuped = True
-            if Days[now.weekday()] == "Mon" and now.hour == 0 and now.minute == 0:
+            if constants.Days[now.weekday()] == "Mon" and now.hour == 0 and now.minute == 0:
                 bot.refresh_all()
             bot.check_users()
 
