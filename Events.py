@@ -10,6 +10,8 @@ class event:
             self.text = "Ы"
         else:
             self.text = s
+        if self.text[-1] == "\n":
+            self.text = self.text[:-1]
         self.is_reminded = False
 
 
