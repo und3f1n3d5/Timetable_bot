@@ -1,5 +1,5 @@
 import datetime
-Days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
+from constants import Days
 
 
 class event:
@@ -49,7 +49,13 @@ class events:
     def backup(self, file):
         for day in Days:
             for ev in self.Events[day]:
-                file.write(day + " " + str(ev.hour) + ":" + str(ev.minute) + " " + str(ev.text))
+                mm = str(ev.minute)
+                hh = str(ev.hour)
+                if ev.minute < 10:
+                    mm = "0" + mm
+                if ev.hour < 10:
+                    hh = "0" + hh
+                file.write(day + " " + hh + ":" + mm + " " + str(ev.text))
 
     # todo testing
     def refresh(self):
@@ -63,7 +69,10 @@ class events:
         for day in Days:
             for ev in self.Events[day]:
                 mm = str(ev.minute)
+                hh = str(ev.hour)
                 if ev.minute < 10:
                     mm = "0" + mm
-                res.append(day + " " + str(ev.hour) + ":" + mm + " " + ev.text)
+                if ev.hour < 10:
+                    hh = "0" + hh
+                res.append(day + " " + hh + ":" + mm + " " + ev.text)
         return res
