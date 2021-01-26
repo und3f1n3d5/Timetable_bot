@@ -2,22 +2,7 @@ from Users import user
 from Events import events
 import datetime
 import telebot
-
-Days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
-
-start_message = 'Приветствую, друг! Я бот, который может напоминать тебе о событиях. Нажми /help, чтобы увидеть мои ' \
-                'команды '
-help_message = "\n\t/start - начать общение\n\t/help - вывести список доступных команд\n\t/add_event - добавить " \
-               "событие в расписание\n\t/remove_event - удалить событие из расписания\n\t" \
-               "/show_timetable " \
-               "- показать текущее расписание\n\t/subscribe - подписаться на все события из расписания " \
-               "группы\n\t/unsubscribe - отменить подписку\n\n\t/reset - очистить расписание\n\n Все предложения, " \
-               "пожелания и баг-репорты присылайте на @undef1ne5 "
-reset_message = "Все события удалены"
-subscribe_message = "Теперь вы подписаны на расписание группы Б05-912"
-unsubscribe_message = "Подписка отменена"
-ensure_message = "Если вы действительно хотите очистить ВСЁ свое расписание, пошлите мне команду /reset еще раз"
-
+import constants
 
 class BotHandler:
     def read_users(self):
@@ -72,11 +57,11 @@ class BotHandler:
         if text.find("/start") != -1:
             if self.users[user_id] is None:
                 self.users[user_id] = user(user_id, self)
-            self.send_message(user_id, start_message)
+            self.send_message(user_id, constants.start_message)
         elif text.find("/help") != -1:
             self.users[user_id].removing = False
             self.users[user_id].adding = False
-            self.send_message(user_id, help_message)
+            self.send_message(user_id, constants.help_message)
         elif text.find("/add_event") != -1:
             self.users[user_id].removing = False
             self.users[user_id].adding = True
@@ -88,20 +73,20 @@ class BotHandler:
             self.users[user_id].adding = False
             self.users[user_id].is_subscribed = False
             if not self.users[user_id].sure_reset:
-                self.send_message(user_id, ensure_message)
+                self.send_message(user_id, constants.ensure_message)
                 self.users[user_id].sure_reset = True
             else:
-                self.send_message(user_id, reset_message)
+                self.send_message(user_id, constants.reset_message)
                 self.users[user_id].reset()
         elif text.find("/subscribe") != -1:
             self.users[user_id].removing = False
             self.users[user_id].adding = False
-            self.send_message(user_id, subscribe_message)
+            self.send_message(user_id, constants.subscribe_message)
             self.users[user_id].subscribe(True, self.timetable)
         elif text.find("/unsubscribe") != -1:
             self.users[user_id].removing = False
             self.users[user_id].adding = False
-            self.send_message(user_id, unsubscribe_message)
+            self.send_message(user_id, constants.unsubscribe_message)
             self.users[user_id].subscribe(False, self.timetable)
         elif text.find("/show_timetable") != -1:
             self.users[user_id].removing = False
@@ -129,7 +114,7 @@ class BotHandler:
 
     # todo testing
     def refresh_all(self):
-        if Days[datetime.datetime.now().weekday()] == "Mon" and datetime.datetime.now().minute == 0 and datetime.datetime.now().hour == 0:
+        if constants.Days[datetime.datetime.now().weekday()] == "Mon" and datetime.datetime.now().minute == 0 and datetime.datetime.now().hour == 0:
             for u in self.users.keys():
                 self.users[u].refresh()
 
