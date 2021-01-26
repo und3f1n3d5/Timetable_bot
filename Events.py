@@ -14,6 +14,9 @@ class event:
             self.text = self.text[:-1]
         self.is_reminded = False
 
+    def __lt__(self, other):
+        return self.hour < other.hour or (self.hour == other.hour and self.minute < other.minute)
+
 
 class events:
     def __init__(self):
@@ -69,6 +72,7 @@ class events:
     def get_events(self):
         res = list()
         for day in Days:
+            self.Events[day].sort()
             for ev in self.Events[day]:
                 mm = str(ev.minute)
                 hh = str(ev.hour)
