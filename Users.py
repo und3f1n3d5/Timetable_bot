@@ -20,6 +20,11 @@ class user:
     def remind(self, evt):
         self.bot.send_message(self.id, evt)
 
+    def stop_adding(self):
+        self.adding = False
+        self.added_day = ""
+        self.added_event = event(-1, -1, "")
+
     def add_event(self, string):
         hour, minute = self.added_event.hour, self.added_event.minute
         if string.find("/add_event") != -1:
@@ -29,12 +34,12 @@ class user:
             self.added_event = event(hour, minute, string)
             self.events.add_event(self.added_event, self.added_day)
             self.bot.send_message(self.id, "Успешно добавлено")
-            self.adding = False
+            self.stop_adding()
             return
         else:
             if string in Days:
                 self.added_day = string
-                self.bot.send_message(self.id, "Введите время в 24-х часовом формате")
+                self.bot.send_message(self.id, "Вы успешно выбрали день. Теперь введите время в 24-х часовом формате")
                 return
             elif string.find(":") != -1:
                 hour = string[:string.find(":")]
@@ -62,7 +67,7 @@ class user:
                 return
 
         if self.added_day == "":
-            self.bot.send_message(self.id, "Попробуйте еще раз выбрать день")
+            self.bot.send_message(self.id, "Попробуйте еще раз")
             self.bot.send_buttons(self.id)
             return
 
@@ -71,7 +76,7 @@ class user:
             if not (0 <= self.added_event.hour <= 23 and 0 <= self.added_event.minute <= 59):
                 self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз 2")
                 return
-            self.bot.send_message(self.id, "Введите название события")
+            self.bot.send_message(self.id, "Вы успешно выбрали день и время. Теперь введите название события")
         except Exception as e:
             print(e)
             self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз 1")
