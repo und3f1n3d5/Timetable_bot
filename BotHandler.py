@@ -9,12 +9,14 @@ start_message = 'Приветствую, друг! Я бот, который м�
                 'команды '
 help_message = "\n\t/start - начать общение\n\t/help - вывести список доступных команд\n\t/add_event - добавить " \
                "событие в расписание\n\t/remove_event - удалить событие из расписания\n\t" \
-               "\n\t/reset - очистить расписание\n\n\t/show_timetable " \
+               "/show_timetable " \
                "- показать текущее расписание\n\t/subscribe - подписаться на все события из расписания " \
-               "группы\n\t/unsubscribe - отменить подписку "
+               "группы\n\t/unsubscribe - отменить подписку\n\n\t/reset - очистить расписание\n\n Все предложения, " \
+               "пожелания и баг-репорты присылайте на @undef1ne5 "
 reset_message = "Все события удалены"
 subscribe_message = "Теперь вы подписаны на расписание группы Б05-912"
 unsubscribe_message = "Подписка отменена"
+ensure_message = "Если вы действительно хотите очистить ВСЁ свое расписание, пошлите мне команду /reset еще раз"
 
 
 class BotHandler:
@@ -28,11 +30,11 @@ class BotHandler:
                 continue
             if action == "read_events":
                 if line == "1":
-                    self.users[current_user].subscribe(True, self.timetable)
+                    self.users[current_user].is_subscribed = True
                     action = "-"
                     continue
                 if line == "0":
-                    self.users[current_user].subscribe(False, self.timetable)
+                    self.users[current_user].is_subscribed = False
                     action = "-"
                     continue
                 self.users[current_user].add(line)
@@ -85,8 +87,12 @@ class BotHandler:
             self.users[user_id].removing = False
             self.users[user_id].adding = False
             self.users[user_id].is_subscribed = False
-            self.send_message(user_id, reset_message)
-            self.users[user_id].reset()
+            if not self.users[user_id].sure_reset:
+                self.send_message(user_id, ensure_message)
+                self.users[user_id].sure_reset = True
+            else:
+                self.send_message(user_id, reset_message)
+                self.users[user_id].reset()
         elif text.find("/subscribe") != -1:
             self.users[user_id].removing = False
             self.users[user_id].adding = False
