@@ -63,7 +63,11 @@ class user:
                 hour = string[:2]
                 minute = string[2:]
             else:
-                self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз 3")
+                if self.added_day == "":
+                    self.bot.send_message(self.id, "Попробуйте еще раз")
+                    self.bot.send_buttons(self.id)
+                else:
+                    self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз")
                 return
 
         if self.added_day == "":
@@ -74,13 +78,13 @@ class user:
         try:
             self.added_event = event(hour, minute, "-")
             if not (0 <= self.added_event.hour <= 23 and 0 <= self.added_event.minute <= 59):
-                self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз 2")
+                self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз")
                 self.added_event = event(-1, -1, "")
                 return
             self.bot.send_message(self.id, "Вы успешно выбрали день и время. Теперь введите название события")
         except Exception as e:
             #print(e)
-            self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз 1")
+            self.bot.send_message(self.id, "Некорректный формат, попробуйте ещё раз")
             return
 
     def remove_event(self, string):
