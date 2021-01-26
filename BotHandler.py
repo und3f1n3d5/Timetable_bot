@@ -51,11 +51,11 @@ class BotHandler:
     def send_buttons(self, user_id):
         buttons = telebot.types.ReplyKeyboardMarkup(True, True)
         buttons.row("Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun")
-        self.bot.send_message(user_id, "Выберите день, на который вы хотели бы поставить событие", reply_markup=buttons)
+        self.bot.send_message(user_id, "С помощью кнопок выберите день, на который вы хотели бы поставить событие", reply_markup=buttons)
 
     def recieve_message(self, user_id, text):
         if text.find("/start") != -1:
-            if self.users[user_id] is None:
+            if user_id not in self.users.keys():
                 self.users[user_id] = user(user_id, self)
             self.send_message(user_id, constants.start_message)
         elif text.find("/help") != -1:
@@ -79,6 +79,7 @@ class BotHandler:
             else:
                 self.send_message(user_id, constants.reset_message)
                 self.users[user_id].reset()
+                self.users[user_id].sure_reset = False
         elif text.find("/subscribe") != -1:
             self.users[user_id].removing = False
             self.users[user_id].stop_adding()
@@ -96,6 +97,9 @@ class BotHandler:
             if message == "":
                 message = "У вас нет событий"
             self.send_message(user_id, message)
+
+        if text.find("/reset") == -1:
+            self.users[user_id].sure_reset = False
 
         if self.users[user_id].adding:
             self.users[user_id].add_event(text)
