@@ -60,17 +60,18 @@ class BotHandler:
             self.send_message(user_id, constants.start_message)
         elif text.find("/help") != -1:
             self.users[user_id].removing = False
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
             self.send_message(user_id, constants.help_message)
         elif text.find("/add_event") != -1:
+            self.users[user_id].stop_adding()
             self.users[user_id].removing = False
             self.users[user_id].adding = True
         elif text.find("/remove_event") != -1:
             self.users[user_id].removing = True
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
         elif text.find("/reset") != -1:
             self.users[user_id].removing = False
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
             self.users[user_id].is_subscribed = False
             if not self.users[user_id].sure_reset:
                 self.send_message(user_id, constants.ensure_message)
@@ -80,17 +81,17 @@ class BotHandler:
                 self.users[user_id].reset()
         elif text.find("/subscribe") != -1:
             self.users[user_id].removing = False
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
             self.send_message(user_id, constants.subscribe_message)
             self.users[user_id].subscribe(True, self.timetable)
         elif text.find("/unsubscribe") != -1:
             self.users[user_id].removing = False
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
             self.send_message(user_id, constants.unsubscribe_message)
             self.users[user_id].subscribe(False, self.timetable)
         elif text.find("/show_timetable") != -1:
             self.users[user_id].removing = False
-            self.users[user_id].adding = False
+            self.users[user_id].stop_adding()
             message = self.users[user_id].list_events()
             if message == "":
                 message = "У вас нет событий"
