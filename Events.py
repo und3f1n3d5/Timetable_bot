@@ -60,7 +60,7 @@ class events:
                     mm = "0" + mm
                 if ev.hour < 10:
                     hh = "0" + hh
-                file.write(day + " " + hh + ":" + mm + " " + str(ev.text))
+                file.write(day + " " + hh + ":" + mm + " " + str(ev.text) + "\n")
 
     # todo testing
     def refresh(self):
