@@ -54,9 +54,9 @@ class BotHandler:
         self.bot.send_message(user_id, "С помощью кнопок выберите день, на который вы хотели бы поставить событие", reply_markup=buttons)
 
     def recieve_message(self, user_id, text):
+        if user_id not in self.users.keys():
+            self.users[user_id] = user(user_id, self)
         if text.find("/start") != -1:
-            if user_id not in self.users.keys():
-                self.users[user_id] = user(user_id, self)
             self.send_message(user_id, constants.start_message)
         elif text.find("/help") != -1:
             self.users[user_id].removing = False
