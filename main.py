@@ -17,7 +17,7 @@ def main():
                 last_update_id = last_update.update_id
                 last_chat_text = last_update.message.text
                 last_chat_id = str(last_update.message.chat.id)
-                bot.recieve_message(last_chat_id, last_chat_text)
+                bot.receive_message(last_chat_id, last_chat_text)
                 new_offset = last_update_id + 1
 
             now = datetime.datetime.now()
