@@ -4,6 +4,7 @@ import datetime
 import telebot
 import constants
 
+
 class BotHandler:
     def read_users(self):
         action = ""
@@ -46,14 +47,18 @@ class BotHandler:
         self.read_users()
 
     def send_message(self, user_id, message):
-        self.bot.send_message(user_id, message)
+        i = 0
+        while i < len(message):
+            self.bot.send_message(user_id, message[i:min(i + constants.max_message_length, len(message))])
+            i += constants.max_message_length
 
     def send_buttons(self, user_id):
         buttons = telebot.types.ReplyKeyboardMarkup(True, True)
         buttons.row("Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun")
-        self.bot.send_message(user_id, "С помощью кнопок выберите день, на который вы хотели бы поставить событие", reply_markup=buttons)
+        self.bot.send_message(user_id, "С помощью кнопок выберите день, на который вы хотели бы поставить событие",
+                              reply_markup=buttons)
 
-    def recieve_message(self, user_id, text):
+    def receive_message(self, user_id, text):
         if user_id not in self.users.keys():
             self.users[user_id] = user(user_id, self)
         if text.find("/start") != -1:
@@ -119,7 +124,8 @@ class BotHandler:
 
     # todo testing
     def refresh_all(self):
-        if constants.Days[datetime.datetime.now().weekday()] == "Mon" and datetime.datetime.now().minute == 0 and datetime.datetime.now().hour == 0:
+        if constants.Days[
+            datetime.datetime.now().weekday()] == "Mon" and datetime.datetime.now().minute == 0 and datetime.datetime.now().hour == 0:
             for u in self.users.keys():
                 self.users[u].refresh()
 
