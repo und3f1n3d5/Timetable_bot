@@ -1,6 +1,6 @@
 Days = ["Mon", "Tue", "Wen", "Thu", "Fri", "Sat", "Sun"]
 
-token = "1411772657:AAFkziVjMcehzkWDRWJyrnt7au7EBqDL9nQ"
+token = "your_token"
 
 start_message = 'Приветствую, друг! Я бот, который может напоминать тебе о событиях.\n Нажми /help, чтобы увидеть мои ' \
                 'команды '
